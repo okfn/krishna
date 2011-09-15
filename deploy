@@ -1,0 +1,50 @@
+#!/bin/bash
+
+SEP="========================================================================"
+
+deploy_abort() {
+	retcode="${1}"
+	touch "${GIT_DIR}/deploy_aborted"
+	echo "ERROR: The last command finished with a non-zero exit status (${retcode})"
+	echo "ERROR: and so this deploy is aborting!"
+	echo "ERROR: "
+	echo "ERROR: Created \$GIT_DIR/deploy_aborted to prevent further pushes to"
+	echo "ERROR: this remote until this issue has been resolved."
+	echo "ERROR: "
+	echo "ERROR: The full output of the last command can be found below:"
+	echo "${SEP}"
+	cat "${GIT_DIR}/deploy_lastlog"
+	echo "${SEP}"
+	echo "ERROR: End of deploy abort message! See above for details."
+	exit "${retcode}"
+}
+
+deploy_run_command() {
+	cmd="${1}"
+	if [ -z "${2}" ]; then
+		cmd_desc="${1}"
+	else
+		cmd_desc="${2}"
+	fi
+	echo "- ${cmd_desc}"
+	pushd "${GIT_WORK_TREE}" > /dev/null
+	eval "${cmd}" > "${GIT_DIR}/deploy_lastlog" 2>&1
+	retcode="${?}"
+	popd > /dev/null
+	if [ ! "${retcode}" -eq 0 ]; then
+		deploy_abort "${retcode}"
+	fi
+}
+
+deploy() {
+	# Deployment tasks
+	echo "${SEP}"
+	echo "Starting deployment:"
+	deploy_run_command 'echo "Hello world!"' 'Do the hello world dance'
+	deploy_run_command 'sleep 3' 
+	deploy_run_command 'echo "Hello world!" && false' 'Do the hello world dance again'
+	echo "Deploy finished successfully!"
+	echo "${SEP}"
+}
+
+deploy

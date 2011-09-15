@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+pushd . > /dev/null
+cd "$(dirname "${SCRIPT_PATH}")" > /dev/null
+SCRIPT_PATH="$(pwd)"
+popd > /dev/null
+
+source "${SCRIPT_PATH}/checkout-branch"
+source "${SCRIPT_PATH}/deploy"

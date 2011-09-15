@@ -1,0 +1,34 @@
+#!/bin/sh
+
+CI_URL='https://continuous.io/okfn/openspending/branch/master/'
+CI_STR='result-s" id="branch-nav-master'
+
+##############################################################################
+
+SEP="========================================================================"
+
+echo "${SEP}"
+
+# Check that the repo isn't in a dirty state from a previous failed deploy
+if [ -f "${GIT_DIR}/deploy_aborted" ]; then
+	echo "ERROR: \$GIT_DIR/deploy_aborted exists, cannot continue!"
+	echo "ERROR: "
+	echo "ERROR: This probably means that a previous deploy failed to complete"
+	echo "ERROR: successfully, and to prevent further corruption, you should"
+	echo "ERROR: manually check the state of the repository before removing this"
+	echo "ERROR: file."
+	echo "${SEP}"
+	exit 1
+fi 
+
+
+# Can continue with deploy: check CI
+echo "Checking continuous integration server to see if build is green:"
+if curl -sL "${CI_URL}" | grep -q "${CI_STR}"; then
+	echo "Build appears good: proceeding."
+	echo "${SEP}"
+else
+	echo "ERROR: Build can't be verified green: aborting push!"
+	echo "${SEP}"
+	exit 1
+fi

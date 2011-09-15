@@ -1,0 +1,24 @@
+# krishna
+## The deployer of worlds
+
+`krishna` is a simple set of helper scripts for managing software 
+deployment through git hooks.
+
+## Installation
+
+Add the following to your .git/config on the server:
+
+    [receive]
+        denycurrentbranch = ignore
+
+Symlink the git hooks in place:
+
+    $ cd $REPO/.git/hooks
+    $ ln -s ../../deployer/pre-receive .
+    $ ln -s ../../deployer/post-update .
+
+Customise the `deploy` script to do what you need. 
+
+## Apologies
+
+To the readers of the Bhagavad Gita.
